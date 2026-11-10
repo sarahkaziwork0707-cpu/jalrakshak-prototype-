@@ -33,7 +33,7 @@ Follow these exact steps to explore the two simulations:
 * **Click on "IoT Live Dashboard"**.
 * Watch the live telemetry data update in real-time across the 3 server racks. Notice the "Total water saved" counter ticking up.
 * **Test the AI:** Click the button that says **"Simulate heat spike (+15°C)"**. Watch how the system predicts the heat, the PCM liquid percentage jumps, and the smart fans spin up instantly to save the servers.
-* Click **"🔄 reset normal load"** to return the racks to normal operating temperatures.
+* Click **"reset normal load"** to return the racks to normal operating temperatures.
 
 ---
 
