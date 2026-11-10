@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JalRakshak AI | Master Thermal Simulation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --accent: #00d2ff;
+            --danger: #ff4b2b;
+            --cream: #fff5e1;
+            --water-blue: #3a86ff;
+            --esp-glow: #7c4dff;
+            --dht-glow: #ff5252;
+            --pcm-glow: #00e676;
+            --fan-glow: #ffd600;
+            --cloud-glow: #00b0ff;
+            --pwr-glow: #651fff;
+        }
+
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif;
+            overflow: hidden; 
+        }
+
+        .page { height: 100vh; width: 100vw; display: none; flex-direction: column; padding: 20px; }
+        .active { display: flex; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- HARDWARE PAGE STYLING --- */
+        .hw-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .hw-header { border-left: 5px solid #00ff88; padding-left: 15px; margin-bottom: 30px; }
+        .hw-header h1 { font-size: 3rem; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
+        .hw-header p { font-style: italic; color: var(--accent); margin: 5px 0; }
+
+        .hw-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 20px; 
+        }
+
+        .hw-card {
+            background: var(--panel);
+            padding: 25px;
+            border-radius: 4px;
+            position: relative;
+            border: 2px solid transparent;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hw-card:hover { transform: translateY(-5px); background: #1c2128; }
+
+        /* Neon Border Logic */
+        .esp-card { border-color: var(--esp-glow); box-shadow: inset 0 0 10px var(--esp-glow); }
+        .dht-card { border-color: var(--dht-glow); box-shadow: inset 0 0 10px var(--dht-glow); }
+        .pcm-card { border-color: var(--pcm-glow); box-shadow: inset 0 0 10px var(--pcm-glow); }
+        .fan-card { border-color: var(--fan-glow); box-shadow: inset 0 0 10px var(--fan-glow); }
+        .cld-card { border-color: var(--cloud-glow); box-shadow: inset 0 0 10px var(--cloud-glow); }
+        .pwr-card { border-color: var(--pwr-glow); box-shadow: inset 0 0 10px var(--pwr-glow); }
+
+        .hw-card i { font-size: 2.5rem; position: absolute; right: 20px; top: 20px; opacity: 0.8; }
+        .hw-card h3 { margin: 0; font-size: 1.4rem; font-weight: bold; }
+        .hw-card p { font-size: 0.85rem; color: #8b949e; margin: 15px 0; min-height: 35px; }
+        .hw-card b { font-size: 1.8rem; color: #ffeb3b; }
+
+        .hw-footer {
+            margin-top: 40px;
+            text-align: center;
+            border-bottom: 3px solid #00d2ff;
+            padding-bottom: 15px;
+        }
+
+        /* --- LAYOUTS & SIM --- */
+        .layout { flex: 1; display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+        .sim-box { background: #000; border-radius: 15px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 1px solid #333;}
+        .pipe { position: absolute; right: 20px; top: 0; width: 60px; height: 100%; background: #1a1a1a; border-left: 4px solid #333; overflow: hidden; }
+        .water-flow { position: absolute; width: 100%; height: 200%; background: linear-gradient(180deg, transparent 0%, var(--water-blue) 20%, rgba(58, 134, 255, 0.2) 50%, var(--water-blue) 80%, transparent 100%); background-size: 100% 200px; animation: moveWater 0.8s infinite linear; }
+        @keyframes moveWater { 0% { transform: translateY(-200px); } 100% { transform: translateY(0); } }
+        .particle { position: absolute; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; filter: blur(2px); pointer-events: none; animation: radiate 1s forwards linear; }
+        @keyframes radiate { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(180px, var(--y)) scale(2); opacity: 0; } }
+        .rack { width: 320px; height: 420px; background: #1c2128; border: 3px solid #444; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 5; }
+        .blade { height: 35px; background: #0d1117; border-left: 5px solid var(--danger); }
+        .pcm-tank { width: 110px; height: 300px; background: #050505; border: 2px solid var(--accent); border-radius: 10px; position: relative; overflow: hidden; display: flex; align-items: flex-end; margin-left: 20px; z-index: 5; }
+        .wax { width: 100%; background: var(--cream); transition: 1.2s ease-in-out; }
+        .fan { width: 70px; height: 70px; border: 2px solid #555; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .prop { width: 4px; height: 50px; background: #8b949e; }
+        .sidebar { background: var(--panel); border-radius: 15px; padding: 25px; border: 1px solid #30363d; display: flex; flex-direction: column; }
+        .btn { padding: 15px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; text-transform: uppercase; transition: 0.2s; }
+        .btn-accent { background: var(--accent); color: #000; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); }
+        .btn-accent:hover { background: #fff; box-shadow: 0 0 20px var(--accent); }
+        
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="p1" class="page active" style="justify-content: center;">
+        <div class="hw-container">
+            <div class="hw-header">
+                <h1>Hardware Components</h1>
+                <p>Cost-effective, locally sourced, modular design</p>
+            </div>
+
+            <div class="hw-grid">
+                <div class="hw-card esp-card">
+                    <i class="fas fa-microchip" style="color: var(--esp-glow);"></i>
+                    <h3 style="color: var(--esp-glow);">ESP32 Controller</h3>
+                    <p>Dual-core 240MHz, Wi-Fi + BT integration.</p>
+                    <b>₹450</b>
+                </div>
+
+                <div class="hw-card dht-card">
+                    <i class="fas fa-thermometer-half" style="color: var(--dht-glow);"></i>
+                    <h3 style="color: var(--dht-glow);">DHT22 Sensor</h3>
+                    <p>Temp/Humidity ±0.5°C accuracy precision.</p>
+                    <b>₹120</b>
+                </div>
+
+                <div class="hw-card pcm-card">
+                    <i class="fas fa-leaf" style="color: var(--pcm-glow);"></i>
+                    <h3 style="color: var(--pcm-glow);">Paraffin PCM</h3>
+                    <p>10 kg/rack, phase change melts at 42°C.</p>
+                    <b>₹800</b>
+                </div>
+
+                <div class="hw-card fan-card">
+                    <i class="fas fa-fan" style="color: var(--fan-glow);"></i>
+                    <h3 style="color: var(--fan-glow);">DC Cooling Fans</h3>
+                    <p>12V, 80mm, 2000 RPM high flow.</p>
+                    <b>₹350</b>
+                </div>
+
+                <div class="hw-card cld-card">
+                    <i class="fas fa-cloud" style="color: var(--cloud-glow);"></i>
+                    <h3 style="color: var(--cloud-glow);">Cloud Platform</h3>
+                    <p>MQTT broker + real-time dashboard UI.</p>
+                    <b>₹200</b>
+                </div>
+
+                <div class="hw-card pwr-card">
+                    <i class="fas fa-plug" style="color: var(--pwr-glow);"></i>
+                    <h3 style="color: var(--pwr-glow);">Power Supply</h3>
+                    <p>5V/3A regulated adapter for stability.</p>
+                    <b>₹250</b>
+                </div>
+            </div>
+
+            <div class="hw-footer">
+                <span style="color: #00ff88; font-weight: bold;">Estimated Total System Cost: ₹15,000 per rack</span>
+                <span style="margin-left: 20px; color: var(--accent);">• All components available domestically</span>
+            </div>
+
+            <div style="display: flex; justify-content: center;">
+                <button class="btn btn-accent" style="width: 350px; margin-top: 30px;" onclick="nav('p2')">Launch Thermal Simulation</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p2" class="page">
+        <h2 style="color: var(--danger);">Traditional: Uncontrolled Resource Consumption</h2>
+        <div class="layout">
+            <div class="sim-box">
+                <div style="position:absolute; inset:0; background:radial-gradient(circle, rgba(255,75,43,0.3) 0%, transparent 70%);"></div>
+                <div class="pipe"><div class="water-flow"></div></div>
+                <div class="rack" style="border-color: var(--danger);">
+                    <div class="blade"></div><div class="blade"></div><div class="blade"></div>
+                    <div class="blade"></div><div class="blade"></div><div class="blade"></div>
+                    <div style="margin-top:auto; display:flex; justify-content:space-around;">
+                        <div class="fan"><div class="prop" style="animation: spin 0.1s linear infinite;"></div></div>
+                        <div class="fan"><div class="prop" style="animation: spin 0.1s linear infinite;"></div></div>
+                    </div>
+                </div>
+                <div style="position:absolute; right:100px; color:var(--water-blue); font-weight:bold; background: rgba(0,0,0,0.5); padding: 5px;">WASTE WATER >></div>
+            </div>
+            <div class="sidebar">
+                <h3 style="color:var(--danger)">RESOURCE DRAIN</h3>
+                <p>• <b>Cooling Fans:</b> 100% Constant</p>
+                <p>• <b>Water Tower:</b> Continuous Flow</p>
+                <button class="btn btn-accent" onclick="nav('p3')">Upgrade to JalRakshak</button>
+                <button class="btn" style="background:#333; color:white;" onclick="nav('p1')">Back to Components</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="p3" class="page">
+        <h2 style="color: var(--accent);">JalRakshak AI: Dynamic Dashboard</h2>
+        <div class="layout">
+            <div class="sim-box">
+                <div id="glow" style="position:absolute; inset:0; transition:0.5s;"></div>
+                <div id="pSpace" style="position:absolute; width:300px; height:300px; left:200px;"></div>
+                <div class="rack">
+                    <div class="blade"></div><div class="blade"></div><div class="blade"></div>
+                    <div class="blade"></div><div class="blade"></div><div class="blade"></div>
+                    <div style="margin-top:auto; display:flex; justify-content:space-around;">
+                        <div class="fan"><div class="prop" id="f1"></div></div>
+                        <div class="fan"><div class="prop" id="f2"></div></div>
+                    </div>
+                </div>
+                <div class="pcm-tank">
+                    <div class="wax" id="wax"></div>
+                    <div style="position:absolute; top:10px; width:100%; text-align:center; color:#000; font-weight:bold; font-size:10px;" id="tag">SOLID</div>
+                </div>
+            </div>
+            <div class="sidebar">
+                <label>Adjust Simulation Temperature</label>
+                <input type="range" min="30" max="80" value="30" id="slider" style="width:100%; accent-color:var(--accent);">
+                <h1 id="tShow">30°C</h1>
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px;">
+                    <p style="margin:5px 0;">PCM Phase: <b id="pShow" style="color:var(--cream)">SOLIDIFIED</b></p>
+                    <p style="margin:5px 0;">Fan Status: <b id="fanStatusText" style="color:#8b949e">NOT ACTIVE</b></p>
+                </div>
+                <div style="margin-top:auto;">
+                    <button class="btn btn-accent" onclick="nav('p2')">Back to Traditional</button>
+                    <button class="btn" style="background:#444; color:white;" onclick="nav('p1')">View Hardware</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function nav(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        const slider = document.getElementById('slider');
+        const wax = document.getElementById('wax');
+        const glow = document.getElementById('glow');
+        const pSpace = document.getElementById('pSpace');
+        const f1 = document.getElementById('f1');
+        const f2 = document.getElementById('f2');
+        const fanStatusText = document.getElementById('fanStatusText');
+
+        slider.addEventListener('input', (e) => {
+            const t = parseInt(e.target.value);
+            document.getElementById('tShow').innerText = t + "°C";
+            const val = (t - 30) / 50;
+            glow.style.background = `radial-gradient(circle, rgba(255, 75, 43, ${val}) 0%, transparent 70%)`;
+
+            if(t > 40) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.setProperty('--y', (Math.random() * 100 - 50) + 'px');
+                pSpace.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+
+            if (t < 42) {
+                wax.style.height = "100%"; wax.style.background = "var(--cream)";
+                f1.style.animation = "none"; f2.style.animation = "none";
+                document.getElementById('pShow').innerText = "SOLIDIFIED";
+                document.getElementById('pShow').style.color = "var(--cream)";
+                document.getElementById('tag').innerText = "SOLID";
+                fanStatusText.innerText = "NOT ACTIVE";
+                fanStatusText.style.color = "#8b949e";
+            } 
+            else if (t >= 42 && t <= 60) {
+                wax.style.height = "25%"; wax.style.background = "var(--accent)";
+                f1.style.animation = "spin 0.6s linear infinite";
+                f2.style.animation = "spin 0.6s linear infinite";
+                document.getElementById('pShow').innerText = "LIQUEFIED";
+                document.getElementById('pShow').style.color = "var(--accent)";
+                document.getElementById('tag').innerText = "LIQUID";
+                fanStatusText.innerText = "50% ACTIVE";
+                fanStatusText.style.color = "var(--accent)";
+            } 
+            else {
+                wax.style.height = "15%"; wax.style.background = "#3a86ff";
+                f1.style.animation = "spin 0.1s linear infinite";
+                f2.style.animation = "spin 0.1s linear infinite";
+                document.getElementById('pShow').innerText = "MAX LIQUEFACTION";
+                document.getElementById('pShow').style.color = "var(--danger)";
+                fanStatusText.innerText = "100% ACTIVE";
+                fanStatusText.style.color = "var(--danger)";
+            }
+        });
+    </script>
+</body>
+</html>

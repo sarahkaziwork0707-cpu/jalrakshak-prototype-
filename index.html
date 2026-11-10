@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JalRakshak AI | Prototype Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --accent: #00d2ff;
+      --green: #00ff88;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, #13203a 0%, #0d1117 60%);
+      color: #eef5ff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #A5F0FF, #00d2ff, #00ff88);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .tagline {
+      color: var(--accent);
+      font-style: italic;
+      margin: 10px 0 8px;
+      font-size: 1.1rem;
+    }
+    .sub {
+      color: #8b949e;
+      font-size: 0.9rem;
+      margin-bottom: 50px;
+    }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      justify-content: center;
+      max-width: 1000px;
+    }
+    .card {
+      background: var(--panel);
+      border: 2px solid #2c3f66;
+      border-radius: 18px;
+      padding: 35px 28px;
+      width: 340px;
+      text-decoration: none;
+      color: #eef5ff;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 10px 25px -12px #000;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: var(--accent);
+      box-shadow: 0 0 25px rgba(0, 210, 255, 0.35);
+    }
+    .card i {
+      font-size: 3rem;
+      color: var(--accent);
+    }
+    .card.green i { color: var(--green); }
+    .card.green:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.35);
+    }
+    .card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .card p {
+      font-size: 0.85rem;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+    .badge {
+      margin-top: 6px;
+      background: #1e2a4e;
+      color: #7fdcff;
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    footer {
+      margin-top: 60px;
+      font-size: 0.8rem;
+      color: #6c7a96;
+    }
+    footer b { color: var(--green); }
+  </style>
+</head>
+<body>
+
+  <h1>JalRakshak AI</h1>
+  <div class="tagline">"Protecting Water. Powering Tomorrow."</div>
+  <div class="sub">IoT + AI Waterless Cooling System for Data Centers · Prototype Hub</div>
+
+  <div class="cards">
+    <!-- Link to simulation.html -->
+    <a class="card" href="simulation.html">
+      <i class="fas fa-microchip"></i>
+      <h2>Thermal Simulation</h2>
+      <p>Click-through walkthrough: Hardware components → Traditional wasteful cooling → JalRakshak AI live PCM + fan dashboard.</p>
+      <span class="badge">3-stage demo</span>
+    </a>
+
+    <!-- Link to dashboard.html -->
+    <a class="card green" href="dashboard.html">
+      <i class="fas fa-chart-line"></i>
+      <h2>IoT Live Dashboard</h2>
+      <p>Real-time multi-rack telemetry: PCM melt %, smart fan curves, ESP32 predictive logic, water saved &amp; energy tracking.</p>
+      <span class="badge">Live simulation</span>
+    </a>
+  </div>
+
+  <footer>
+    SEVA Innovation Challenge 2026 · Team: <b>Sarah Kazi &amp; Insha Khan</b> · Sustainable Technology &amp; Green Innovation
+  </footer>
+
+</body>
+</html>
